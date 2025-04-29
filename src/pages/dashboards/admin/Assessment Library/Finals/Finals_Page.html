@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finals - Assessment Library</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .assessment-card {
+            transition: all 0.2s ease-in-out;
+        }
+        .assessment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.1), 0 2px 4px -1px rgba(79, 70, 229, 0.06);
+        }
+        .question-type-badge {
+            transition: all 0.2s ease-in-out;
+        }
+        .question-type-badge.multiple-choice {
+            background-color: #E0E7FF;
+            color: #4338CA;
+        }
+        .question-type-badge.short-response {
+            background-color: #D1FAE5;
+            color: #065F46;
+        }
+        .question-type-badge.situational {
+            background-color: #FEF3C7;
+            color: #92400E;
+        }
+        .question-type-badge.fill-blank {
+            background-color: #FEE2E2;
+            color: #991B1B;
+        }
+        .question-type-badge.practical-application {
+            background-color: #D8B4FE;
+            color: #7E22CE;
+        }
+        .question-type-badge.comprehensive-review {
+            background-color: #A7F3D0;
+            color: #047857;
+        }
+        .ai-support-badge {
+            background-color: #F3E8FF;
+            color: #7E22CE;
+        }
+        .draggable {
+            cursor: grab;
+        }
+        .draggable:active {
+            cursor: grabbing;
+        }
+        .dropzone {
+            border: 2px dashed #E5E7EB;
+            transition: all 0.2s ease-in-out;
+        }
+        .dropzone.drag-over {
+            border-color: #6366F1;
+            background-color: #EEF2FF;
+        }
+        .assessment-type-tab {
+            transition: all 0.2s ease-in-out;
+        }
+        .assessment-type-tab.active {
+            background-color: #EEF2FF;
+            color: #4F46E5;
+            border-color: #4F46E5;
+        }
+        .standard-badge {
+            background-color: #DBEAFE;
+            color: #1E40AF;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-weight: 500;
+        }
+        .difficulty-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-weight: 500;
+        }
+        .difficulty-badge.easy {
+            background-color: #D1FAE5;
+            color: #065F46;
+        }
+        .difficulty-badge.medium {
+            background-color: #FEF3C7;
+            color: #92400E;
+        }
+        .difficulty-badge.hard {
+            background-color: #FEE2E2;
+            color: #991B1B;
+        }
+        .special-section-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+        }
+        .special-section-badge.practical {
+            background-color: #F3E8FF;
+            color: #7E22CE;
+        }
+        .special-section-badge.comprehensive {
+            background-color: #DCFCE7;
+            color: #166534;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <!-- Header -->
+            <div class="px-6 py-4 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-2xl font-bold text-gray-900">Assessment Library</h1>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-2">
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="custom-final-toggle" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                                <span class="ml-3 text-sm font-medium text-gray-700">Enable Custom Finals</span>
+                            </label>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                                <i class="fas fa-save mr-2"></i>Save Configuration
+                            </button>
+                            <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors" id="create-final-btn">
+                                <i class="fas fa-plus mr-2"></i>Create Final
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="flex">
+                <!-- Sidebar (1/4 width) -->
+                <div class="w-1/4 p-6 border-r border-gray-200">
+                    <div class="space-y-6">
+                        <!-- Assessment Type Tabs -->
+                        <div class="space-y-2">
+                            <h2 class="text-lg font-semibold text-gray-900">Assessment Types</h2>
+                            <div class="flex flex-col space-y-2">
+                                <a href="../Assessment_Library_Page.html" class="assessment-type-tab w-full text-left px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50">
+                                    <i class="fas fa-question-circle mr-2 text-blue-500"></i>Quizzes
+                                </a>
+                                <a href="../Midterms/Midterms_Page.html" class="assessment-type-tab w-full text-left px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50">
+                                    <i class="fas fa-file-alt mr-2 text-purple-500"></i>Midterms
+                                </a>
+                                <button class="assessment-type-tab active w-full text-left px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50">
+                                    <i class="fas fa-graduation-cap mr-2 text-green-500"></i>Finals
+                                </button>
+                                <a href="../Projects/Projects_Page.html" class="assessment-type-tab w-full text-left px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50">
+                                    <i class="fas fa-project-diagram mr-2 text-yellow-500"></i>Projects
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Question Type Legend -->
+                        <div class="space-y-2">
+                            <h2 class="text-lg font-semibold text-gray-900">Question Types</h2>
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between px-4 py-2 bg-white rounded-lg border border-gray-200">
+                                    <span class="text-sm font-medium text-gray-700">Multiple Choice</span>
+                                    <span class="question-type-badge multiple-choice px-2 py-1 rounded-full text-xs font-medium">MC</span>
+                                </div>
+                                <div class="flex items-center justify-between px-4 py-2 bg-white rounded-lg border border-gray-200">
+                                    <span class="text-sm font-medium text-gray-700">Short Response</span>
+                                    <span class="question-type-badge short-response px-2 py-1 rounded-full text-xs font-medium">SR</span>
+                                </div>
+                                <div class="flex items-center justify-between px-4 py-2 bg-white rounded-lg border border-gray-200">
+                                    <span class="text-sm font-medium text-gray-700">Situational</span>
+                                    <span class="question-type-badge situational px-2 py-1 rounded-full text-xs font-medium">ST</span>
+                                </div>
+                                <div class="flex items-center justify-between px-4 py-2 bg-white rounded-lg border border-gray-200">
+                                    <span class="text-sm font-medium text-gray-700">Fill in the Blank</span>
+                                    <span class="question-type-badge fill-blank px-2 py-1 rounded-full text-xs font-medium">FB</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Special Section Types -->
+                        <div class="space-y-2">
+                            <h2 class="text-lg font-semibold text-gray-900">Special Section Types</h2>
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between px-4 py-2 bg-white rounded-lg border border-gray-200">
+                                    <span class="text-sm font-medium text-gray-700">Comprehensive Review</span>
+                                    <span class="question-type-badge comprehensive-review px-2 py-1 rounded-full text-xs font-medium">CR</span>
+                                </div>
+                                <div class="flex items-center justify-between px-4 py-2 bg-white rounded-lg border border-gray-200">
+                                    <span class="text-sm font-medium text-gray-700">Practical Application</span>
+                                    <span class="question-type-badge practical-application px-2 py-1 rounded-full text-xs font-medium">PA</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Final Information -->
+                        <div class="bg-indigo-50 p-4 rounded-lg">
+                            <h3 class="text-sm font-medium text-indigo-900 mb-2">About Finals</h3>
+                            <p class="text-sm text-indigo-700 mb-2">
+                                Finals are comprehensive assessments that cover all or most standards from the curriculum. They evaluate students' overall understanding of financial literacy.
+                            </p>
+                            <p class="text-sm text-indigo-700">
+                                Pre-configured finals are available with different focus areas, or you can create custom finals to meet your specific assessment criteria.
+                            </p>
+                        </div>
+
+                        <!-- Final Features -->
+                        <div class="pt-4 border-t border-gray-200">
+                            <h2 class="text-lg font-semibold text-gray-900 mb-2">Special Sections</h2>
+                            <div class="space-y-4 text-sm text-gray-600">
+                                <div class="flex items-start">
+                                    <i class="fas fa-book-open text-green-500 mt-1 mr-2"></i>
+                                    <div>
+                                        <span class="font-medium">Comprehensive Review</span>
+                                        <p class="text-xs mt-1">A structured review section that tests knowledge across multiple standards in an integrated way.</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="fas fa-tasks text-purple-500 mt-1 mr-2"></i>
+                                    <div>
+                                        <span class="font-medium">Practical Application</span>
+                                        <p class="text-xs mt-1">Real-world scenario requiring students to apply multiple financial literacy concepts to solve a complex problem.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Area (3/4 width) -->
+                <div class="w-3/4 p-6">
+                    <!-- Pre-configured Finals -->
+                    <div class="mb-8">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-4">Pre-configured Finals</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Standard Final Exam -->
+                            <div class="assessment-card bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="text-sm font-medium text-gray-900">Standard Final Exam</h3>
+                                    <div class="flex space-x-2">
+                                        <span class="difficulty-badge medium">Medium</span>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-500 mb-3">Comprehensive Coverage - 55 minutes</p>
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    <span class="standard-badge">All Standards</span>
+                                </div>
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    <span class="question-type-badge multiple-choice px-2 py-1 rounded-full text-xs font-medium">20 MC</span>
+                                    <span class="question-type-badge short-response px-2 py-1 rounded-full text-xs font-medium">6 SR</span>
+                                    <span class="question-type-badge situational px-2 py-1 rounded-full text-xs font-medium">2 ST</span>
+                                    <span class="question-type-badge fill-blank px-2 py-1 rounded-full text-xs font-medium">5 FB</span>
+                                </div>
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    <span class="special-section-badge comprehensive">
+                                        <i class="fas fa-book-open mr-1"></i>
+                                        Comprehensive Review
+                                    </span>
+                                </div>
+                                <div class="flex items-center text-xs text-gray-500 mb-2">
+                                    <span class="mr-4"><i class="fas fa-robot mr-1"></i>AI Grading</span>
+                                    <span class="ai-support-badge px-2 py-1 rounded-full text-xs font-medium">Student Support Enabled</span>
+                                </div>
+                                <div class="flex justify-end">
+                                    <button class="px-3 py-1 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700 transition-colors">
+                                        <i class="fas fa-edit mr-1"></i>Customize
+                                    </button>
+                                    <button class="px-3 py-1 bg-indigo-100 text-indigo-700 text-sm rounded hover:bg-indigo-200 transition-colors ml-2">
+                                        <i class="fas fa-eye mr-1"></i>Preview
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Extended Final Exam -->
+                            <div class="assessment-card bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="text-sm font-medium text-gray-900">Extended Final Exam</h3>
+                                    <div class="flex space-x-2">
+                                        <span class="difficulty-badge hard">Hard</span>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-500 mb-3">In-Depth Assessment - 55 minutes</p>
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    <span class="standard-badge">All Standards</span>
+                                </div>
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    <span class="question-type-badge multiple-choice px-2 py-1 rounded-full text-xs font-medium">15 MC</span>
+                                    <span class="question-type-badge short-response px-2 py-1 rounded-full text-xs font-medium">5 SR</span>
+                                    <span class="question-type-badge situational px-2 py-1 rounded-full text-xs font-medium">3 ST</span>
+                                    <span class="question-type-badge fill-blank px-2 py-1 rounded-full text-xs font-medium">4 FB</span>
+                                </div>
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    <span class="special-section-badge comprehensive">
+                                        <i class="fas fa-book-open mr-1"></i>
+                                        Comprehensive Review
+                                    </span>
+                                    <span class="special-section-badge practical">
+                                        <i class="fas fa-tasks mr-1"></i>
+                                        Practical Application
+                                    </span>
+                                </div>
+                                <div class="flex items-center text-xs text-gray-500 mb-2">
+                                    <span class="mr-4"><i class="fas fa-robot mr-1"></i>AI Grading</span>
+                                    <span class="ai-support-badge px-2 py-1 rounded-full text-xs font-medium">Student Support Enabled</span>
+                                </div>
+                                <div class="flex justify-end">
+                                    <button class="px-3 py-1 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700 transition-colors">
+                                        <i class="fas fa-edit mr-1"></i>Customize
+                                    </button>
+                                    <button class="px-3 py-1 bg-indigo-100 text-indigo-700 text-sm rounded hover:bg-indigo-200 transition-colors ml-2">
+                                        <i class="fas fa-eye mr-1"></i>Preview
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Core Concepts Final Exam -->
+                            <div class="assessment-card bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="text-sm font-medium text-gray-900">Core Concepts Final</h3>
+                                    <div class="flex space-x-2">
+                                        <span class="difficulty-badge easy">Easy</span>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-500 mb-3">Essential Financial Literacy - 45 minutes</p>
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    <span class="standard-badge">Standard 1</span>
+                                    <span class="standard-badge">Standard 3</span>
+                                    <span class="standard-badge">Standard 5</span>
+                                    <span class="standard-badge">Standard 7</span>
+                                    <span class="standard-badge">Standard 15</span>
+                                </div>
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    <span class="question-type-badge multiple-choice px-2 py-1 rounded-full text-xs font-medium">25 MC</span>
+                                    <span class="question-type-badge short-response px-2 py-1 rounded-full text-xs font-medium">5 SR</span>
+                                    <span class="question-type-badge fill-blank px-2 py-1 rounded-full text-xs font-medium">8 FB</span>
+                                </div>
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    <span class="special-section-badge comprehensive">
+                                        <i class="fas fa-book-open mr-1"></i>
+                                        Comprehensive Review
+                                    </span>
+                                </div>
+                                <div class="flex items-center text-xs text-gray-500 mb-2">
+                                    <span class="mr-4"><i class="fas fa-robot mr-1"></i>AI Grading</span>
+                                    <span class="ai-support-badge px-2 py-1 rounded-full text-xs font-medium">Student Support Enabled</span>
+                                </div>
+                                <div class="flex justify-end">
+                                    <button class="px-3 py-1 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700 transition-colors">
+                                        <i class="fas fa-edit mr-1"></i>Customize
+                                    </button>
+                                    <button class="px-3 py-1 bg-indigo-100 text-indigo-700 text-sm rounded hover:bg-indigo-200 transition-colors ml-2">
+                                        <i class="fas fa-eye mr-1"></i>Preview
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Application-Focused Final -->
+                            <div class="assessment-card bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="text-sm font-medium text-gray-900">Application-Focused Final</h3>
+                                    <div class="flex space-x-2">
+                                        <span class="difficulty-badge hard">Hard</span>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-500 mb-3">Practical Financial Decision Making - 55 minutes</p>
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    <span class="standard-badge">All Standards</span>
+                                </div>
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    <span class="question-type-badge multiple-choice px-2 py-1 rounded-full text-xs font-medium">10 MC</span>
+                                    <span class="question-type-badge short-response px-2 py-1 rounded-full text-xs font-medium">3 SR</span>
+                                    <span class="question-type-badge situational px-2 py-1 rounded-full text-xs font-medium">5 ST</span>
+                                </div>
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    <span class="special-section-badge practical">
+                                        <i class="fas fa-tasks mr-1"></i>
+                                        Practical Application
+                                    </span>
+                                </div>
+                                <div class="flex items-center text-xs text-gray-500 mb-2">
+                                    <span class="mr-4"><i class="fas fa-robot mr-1"></i>AI Grading</span>
+                                    <span class="ai-support-badge px-2 py-1 rounded-full text-xs font-medium">Student Support Enabled</span>
+                                </div>
+                                <div class="flex justify-end">
+                                    <button class="px-3 py-1 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700 transition-colors">
+                                        <i class="fas fa-edit mr-1"></i>Customize
+                                    </button>
+                                    <button class="px-3 py-1 bg-indigo-100 text-indigo-700 text-sm rounded hover:bg-indigo-200 transition-colors ml-2">
+                                        <i class="fas fa-eye mr-1"></i>Preview
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Custom Finals Section -->
+                    <div class="mb-8 hidden" id="custom-finals-section">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-lg font-semibold text-gray-900">Custom Finals</h2>
+                            <button class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors text-sm" id="create-custom-final-btn">
+                                <i class="fas fa-plus mr-2"></i>Create Custom Final
+                            </button>
+                        </div>
+                        
+                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center" id="empty-custom-finals">
+                            <div class="mx-auto w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mb-4">
+                                <i class="fas fa-graduation-cap text-2xl"></i>
+                            </div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">No Custom Finals Yet</h3>
+                            <p class="text-gray-500 mb-4">Create custom finals to meet your specific assessment needs.</p>
+                            <button class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors" id="create-first-final-btn">
+                                Create Your First Final
+                            </button>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden" id="custom-finals-list">
+                            <!-- Example Custom Final (Hidden initially) -->
+                            <div class="assessment-card bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="text-sm font-medium text-gray-900">My Custom Final</h3>
+                                    <div class="flex space-x-2">
+                                        <span class="difficulty-badge hard">Hard</span>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-500 mb-3">Custom Assessment - 55 minutes</p>
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    <span class="standard-badge">Standard 1</span>
+                                    <span class="standard-badge">Standard 4</span>
+                                    <span class="standard-badge">Standard 7</span>
+                                    <span class="standard-badge">Standard 10</span>
+                                    <span class="standard-badge">Standard 15</span>
+                                </div>
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    <span class="question-type-badge multiple-choice px-2 py-1 rounded-full text-xs font-medium">15 MC</span>
+                                    <span class="question-type-badge short-response px-2 py-1 rounded-full text-xs font-medium">4 SR</span>
+                                    <span class="question-type-badge situational px-2 py-1 rounded-full text-xs font-medium">2 ST</span>
+                                    <span class="question-type-badge fill-blank px-2 py-1 rounded-full text-xs font-medium">5 FB</span>
+                                </div>
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    <span class="special-section-badge practical">
+                                        <i class="fas fa-tasks mr-1"></i>
+                                        Practical Application
+                                    </span>
+                                </div>
+                                <div class="flex items-center text-xs text-gray-500 mb-2">
+                                    <span class="mr-4"><i class="fas fa-robot mr-1"></i>AI Grading</span>
+                                    <span class="ai-support-badge px-2 py-1 rounded-full text-xs font-medium">Student Support Enabled</span>
+                                </div>
+                                <div class="flex justify-end">
+                                    <button class="px-3 py-1 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700 transition-colors">
+                                        <i class="fas fa-edit mr-1"></i>Edit
+                                    </button>
+                                    <button class="px-3 py-1 bg-indigo-100 text-indigo-700 text-sm rounded hover:bg-indigo-200 transition-colors ml-2">
+                                        <i class="fas fa-eye mr-1"></i>Preview
+                                    </button>
+                                    <button class="px-3 py-1 bg-red-100 text-red-700 text-sm rounded hover:bg-red-200 transition-colors ml-2">
+                                        <i class="fas fa-trash mr-1"></i>Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Final Generator Section -->
+                    <div class="bg-white rounded-lg shadow border border-gray-200 overflow-hidden mb-8">
+                        <div class="px-6 py-4 bg-gradient-to-r from-indigo-700 to-green-700 text-white">
+                            <h2 class="text-lg font-semibold">Final Exam Generator</h2>
+                            <p class="text-sm opacity-80">Create comprehensive final assessments to evaluate student understanding across standards</p>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Basic Configuration -->
+                                <div>
+                                    <h3 class="text-md font-medium text-gray-900 mb-4">Basic Configuration</h3>
+                                    
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Final Exam Title</label>
+                                            <input type="text" id="final-title" placeholder="Enter a descriptive title" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Time Limit (minutes)</label>
+                                            <div class="flex items-center">
+                                                <input type="range" id="time-limit" min="30" max="55" value="45" class="w-full mr-4">
+                                                <span id="time-display" class="text-sm font-medium text-gray-900">45 min</span>
+                                            </div>
+                                            <p class="text-xs text-gray-500 mt-1">Maximum 55 minutes to fit within a standard class period</p>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Difficulty Level</label>
+                                            <select id="difficulty-level" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                                <option value="Easy">Easy</option>
+                                                <option value="Medium" selected>Medium</option>
+                                                <option value="Hard">Hard</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Standards Selection -->
+                                <div>
+                                    <h3 class="text-md font-medium text-gray-900 mb-4">Standards to Include</h3>
+                                    
+                                    <div class="grid grid-cols-3 gap-2 mb-4">
+                                        <!-- First Column -->
+                                        <div class="space-y-2">
+                                            <label class="flex items-center">
+                                                <input type="checkbox" class="standard-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                                                <span class="ml-2 text-sm text-gray-700">Standard 1</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="checkbox" class="standard-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                                                <span class="ml-2 text-sm text-gray-700">Standard 2</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="checkbox" class="standard-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                                                <span class="ml-2 text-sm text-gray-700">Standard 3</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="checkbox" class="standard-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                                                <span class="ml-2 text-sm text-gray-700">Standard 4</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="checkbox" class="standard-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                                                <span class="ml-2 text-sm text-gray-700">Standard 5</span>
+                                            </label>
+                                        </div>
+                                        
+                                        <!-- Second Column -->
+                                        <div class="space-y-2">
+                                            <label class="flex items-center">
+                                                <input type="checkbox" class="standard-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                                                <span class="ml-2 text-sm text-gray-700">Standard 6</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="checkbox" class="standard-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                                                <span class="ml-2 text-sm text-gray-700">Standard 7</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="checkbox" class="standard-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                                                <span class="ml-2 text-sm text-gray-700">Standard 8</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="checkbox" class="standard-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                                                <span class="ml-2 text-sm text-gray-700">Standard 9</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="checkbox" class="standard-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                                                <span class="ml-2 text-sm text-gray-700">Standard 10</span>
+                                            </label>
+                                        </div>
+                                        
+                                        <!-- Third Column -->
+                                        <div class="space-y-2">
+                                            <label class="flex items-center">
+                                                <input type="checkbox" class="standard-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                                                <span class="ml-2 text-sm text-gray-700">Standard 11</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="checkbox" class="standard-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                                                <span class="ml-2 text-sm text-gray-700">Standard 12</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="checkbox" class="standard-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                                                <span class="ml-2 text-sm text-gray-700">Standard 13</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="checkbox" class="standard-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                                                <span class="ml-2 text-sm text-gray-700">Standard 14</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="checkbox" class="standard-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                                                <span class="ml-2 text-sm text-gray-700">Standard 15</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex space-x-2">
+                                        <button class="px-3 py-1 bg-indigo-100 text-indigo-700 text-sm rounded hover:bg-indigo-200 transition-colors" id="select-all">
+                                            Select All
+                                        </button>
+                                        <button class="px-3 py-1 bg-indigo-100 text-indigo-700 text-sm rounded hover:bg-indigo-200 transition-colors" id="select-none">
+                                            Clear Selection
+                                        </button>
+                                        <button class="px-3 py-1 bg-indigo-100 text-indigo-700 text-sm rounded hover:bg-indigo-200 transition-colors" id="select-core">
+                                            Core Standards
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Question Types Section -->
+                            <div class="mt-6">
+                                <h3 class="text-md font-medium text-gray-900 mb-4">Question Types</h3>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <!-- Question Type Selection -->
+                                    <div>
+                                        <div class="space-y-2">
+                                            <label class="flex items-center">
+                                                <input type="checkbox" id="mc-type" class="question-type-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500" checked>
+                                                <span class="ml-2 text-sm text-gray-700">Multiple Choice (MC)</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="checkbox" id="sr-type" class="question-type-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500" checked>
+                                                <span class="ml-2 text-sm text-gray-700">Short Response (SR)</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="checkbox" id="st-type" class="question-type-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500" checked>
+                                                <span class="ml-2 text-sm text-gray-700">Situational (ST)</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="checkbox" id="fb-type" class="question-type-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                                                <span class="ml-2 text-sm text-gray-700">Fill in the Blank (FB)</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Question Distribution -->
+                                    <div>
+                                        <div class="space-y-3">
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-gray-700 w-40">Multiple Choice:</span>
+                                                <input type="range" id="mc-count" min="0" max="30" value="15" class="w-full mr-2">
+                                                <span id="mc-display" class="text-sm font-medium text-gray-900 w-8 text-right">15</span>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-gray-700 w-40">Short Response:</span>
+                                                <input type="range" id="sr-count" min="0" max="10" value="5" class="w-full mr-2">
+                                                <span id="sr-display" class="text-sm font-medium text-gray-900 w-8 text-right">5</span>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-gray-700 w-40">Situational:</span>
+                                                <input type="range" id="st-count" min="0" max="5" value="2" class="w-full mr-2">
+                                                <span id="st-display" class="text-sm font-medium text-gray-900 w-8 text-right">2</span>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-gray-700 w-40">Fill in the Blank:</span>
+                                                <input type="range" id="fb-count" min="0" max="10" value="0" class="w-full mr-2">
+                                                <span id="fb-display" class="text-sm font-medium text-gray-900 w-8 text-right">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+                                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                                        <div>
+                                            <span class="text-sm font-medium text-blue-800">Estimated Time:</span>
+                                            <span id="estimated-time" class="ml-2 text-sm text-blue-800">45 minutes</span>
+                                            <span id="time-warning" class="hidden ml-2 text-xs text-red-600 font-medium">(Exceeds 55 min limit!)</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-sm font-medium text-blue-800">Total Questions:</span>
+                                            <span id="total-questions" class="ml-2 text-sm text-blue-800">22 questions</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Special Sections -->
+                            <div class="mt-6">
+                                <h3 class="text-md font-medium text-gray-900 mb-4">Special Sections</h3>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="space-y-4">
+                                        <label class="flex items-center space-x-3">
+                                            <input
+                                                type="checkbox"
+                                                id="include-comprehensive"
+                                                class="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                                            >
+                                            <div>
+                                                <span class="text-sm text-gray-700">Include Comprehensive Review Section</span>
+                                                <p class="text-xs text-gray-500 mt-1">Integrates concepts across multiple standards (10-15 mins)</p>
+                                            </div>
+                                        </label>
+                                        
+                                        <label class="flex items-center space-x-3">
+                                            <input
+                                                type="checkbox"
+                                                id="include-practical"
+                                                class="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                            >
+                                            <div>
+                                                <span class="text-sm text-gray-700">Include Practical Application Section</span>
+                                                <p class="text-xs text-gray-500 mt-1">Real-world scenario requiring multiple concepts (15-20 mins)</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                        <h4 class="text-sm font-medium text-gray-700 mb-2">Special Section Impact</h4>
+                                        
+                                        <div class="space-y-2 text-xs text-gray-600">
+                                            <p>
+                                                <span class="font-medium">Time Consideration:</span> Each special section will add to the total exam time.
+                                            </p>
+                                            <p>
+                                                <span class="font-medium">Comprehensive Review:</span> Tests integrated understanding across standards.
+                                            </p>
+                                            <p>
+                                                <span class="font-medium">Practical Application:</span> Evaluates ability to apply multiple concepts to solve complex problems.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Question Source Information -->
+                            <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                <h3 class="text-sm font-medium text-yellow-800 mb-2">
+                                    <i class="fas fa-info-circle mr-2"></i>Question Source Information
+                                </h3>
+                                <p class="text-sm text-yellow-700 mb-2">
+                                    Questions for finals are drawn from the question bank associated with each standard. The system will automatically select appropriately difficult questions from the standards you choose.
+                                </p>
+                                <p class="text-sm text-yellow-700">
+                                    <span class="font-medium">Total available:</span> ~500 questions across all standards and question types. For standards with limited question bank content, AI support will generate additional appropriate questions.
+                                </p>
+                            </div>
+                            
+                            <!-- Additional Options -->
+                            <div class="mt-6">
+                                <h3 class="text-md font-medium text-gray-900 mb-4">Additional Options</h3>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="space-y-3">
+                                        <label class="flex items-center">
+                                            <input type="checkbox" id="randomize-questions" class="h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500" checked>
+                                            <span class="ml-2 text-sm text-gray-700">Randomize question order</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" id="ai-grading" class="h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500" checked>
+                                            <span class="ml-2 text-sm text-gray-700">Enable AI grading</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" id="student-support" class="h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500" checked>
+                                            <span class="ml-2 text-sm text-gray-700">Enable student support</span>
+                                        </label>
+                                    </div>
+                                    <div class="space-y-3">
+                                        <label class="flex items-center">
+                                            <input type="checkbox" id="require-completion" class="h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500" checked>
+                                            <span class="ml-2 text-sm text-gray-700">Require all sections to be completed</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" id="allow-partial-credit" class="h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500" checked>
+                                            <span class="ml-2 text-sm text-gray-700">Allow partial credit for responses</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" id="save-for-portfolio" class="h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                                            <span class="ml-2 text-sm text-gray-700">Save results to student portfolio</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Generate Button -->
+                            <div class="mt-8 flex justify-end">
+                                <button id="generate-final" class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                                    Generate Final Exam
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle custom finals section
+            const customFinalToggle = document.getElementById('custom-final-toggle');
+            const customFinalsSection = document.getElementById('custom-finals-section');
+            
+            customFinalToggle.addEventListener('change', function() {
+                customFinalsSection.classList.toggle('hidden', !this.checked);
+            });
+            
+            // First final creation buttons
+            const createFinalBtn = document.getElementById('create-final-btn');
+            const createCustomFinalBtn = document.getElementById('create-custom-final-btn');
+            const createFirstFinalBtn = document.getElementById('create-first-final-btn');
+            const emptyCustomFinals = document.getElementById('empty-custom-finals');
+            const customFinalsList = document.getElementById('custom-finals-list');
+            
+            [createFinalBtn, createCustomFinalBtn, createFirstFinalBtn].forEach(btn => {
+                if (btn) {
+                    btn.addEventListener('click', function() {
+                        // In a real app, this would show a final creation modal
+                        // For this prototype, we'll just hide the empty state and show the example
+                        emptyCustomFinals.classList.add('hidden');
+                        customFinalsList.classList.remove('hidden');
+                    });
+                }
+            });
+            
+            // Time limit slider
+            const timeLimit = document.getElementById('time-limit');
+            const timeDisplay = document.getElementById('time-display');
+            
+            if (timeLimit) {
+                timeLimit.addEventListener('input', function() {
+                    timeDisplay.textContent = this.value + ' min';
+                    updateEstimatedTime();
+                });
+            }
+            
+            // Special section checkboxes
+            const includeComprehensive = document.getElementById('include-comprehensive');
+            const includePractical = document.getElementById('include-practical');
+            
+            if (includeComprehensive) {
+                includeComprehensive.addEventListener('change', function() {
+                    updateEstimatedTime();
+                });
+            }
+            
+            if (includePractical) {
+                includePractical.addEventListener('change', function() {
+                    updateEstimatedTime();
+                });
+            }
+            
+            // Question type sliders
+            const mcCount = document.getElementById('mc-count');
+            const srCount = document.getElementById('sr-count');
+            const stCount = document.getElementById('st-count');
+            const fbCount = document.getElementById('fb-count');
+            
+            const mcDisplay = document.getElementById('mc-display');
+            const srDisplay = document.getElementById('sr-display');
+            const stDisplay = document.getElementById('st-display');
+            const fbDisplay = document.getElementById('fb-display');
+            
+            // Question type checkboxes
+            const mcTypeCheckbox = document.getElementById('mc-type');
+            const srTypeCheckbox = document.getElementById('sr-type');
+            const stTypeCheckbox = document.getElementById('st-type');
+            const fbTypeCheckbox = document.getElementById('fb-type');
+            
+            if (mcTypeCheckbox) {
+                mcTypeCheckbox.addEventListener('change', function() {
+                    mcCount.disabled = !this.checked;
+                    if (!this.checked) mcCount.value = 0;
+                    mcDisplay.textContent = mcCount.value;
+                    updateTotalQuestions();
+                    updateEstimatedTime();
+                });
+            }
+            
+            if (srTypeCheckbox) {
+                srTypeCheckbox.addEventListener('change', function() {
+                    srCount.disabled = !this.checked;
+                    if (!this.checked) srCount.value = 0;
+                    srDisplay.textContent = srCount.value;
+                    updateTotalQuestions();
+                    updateEstimatedTime();
+                });
+            }
+            
+            if (stTypeCheckbox) {
+                stTypeCheckbox.addEventListener('change', function() {
+                    stCount.disabled = !this.checked;
+                    if (!this.checked) stCount.value = 0;
+                    stDisplay.textContent = stCount.value;
+                    updateTotalQuestions();
+                    updateEstimatedTime();
+                });
+            }
+            
+            if (fbTypeCheckbox) {
+                fbTypeCheckbox.addEventListener('change', function() {
+                    fbCount.disabled = !this.checked;
+                    if (!this.checked) fbCount.value = 0;
+                    fbDisplay.textContent = fbCount.value;
+                    updateTotalQuestions();
+                    updateEstimatedTime();
+                });
+            }
+            
+            // Question count sliders
+            if (mcCount) {
+                mcCount.addEventListener('input', function() {
+                    mcDisplay.textContent = this.value;
+                    updateTotalQuestions();
+                    updateEstimatedTime();
+                });
+            }
+            
+            if (srCount) {
+                srCount.addEventListener('input', function() {
+                    srDisplay.textContent = this.value;
+                    updateTotalQuestions();
+                    updateEstimatedTime();
+                });
+            }
+            
+            if (stCount) {
+                stCount.addEventListener('input', function() {
+                    stDisplay.textContent = this.value;
+                    updateTotalQuestions();
+                    updateEstimatedTime();
+                });
+            }
+            
+            if (fbCount) {
+                fbCount.addEventListener('input', function() {
+                    fbDisplay.textContent = this.value;
+                    updateTotalQuestions();
+                    updateEstimatedTime();
+                });
+            }
+            
+            // Standards selection buttons
+            const selectAllBtn = document.getElementById('select-all');
+            const selectNoneBtn = document.getElementById('select-none');
+            const selectCoreBtn = document.getElementById('select-core');
+            const standardCheckboxes = document.querySelectorAll('.standard-checkbox');
+            
+            if (selectAllBtn) {
+                selectAllBtn.addEventListener('click', function() {
+                    standardCheckboxes.forEach(checkbox => {
+                        checkbox.checked = true;
+                    });
+                });
+            }
+            
+            if (selectNoneBtn) {
+                selectNoneBtn.addEventListener('click', function() {
+                    standardCheckboxes.forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                });
+            }
+            
+            if (selectCoreBtn) {
+                selectCoreBtn.addEventListener('click', function() {
+                    // Select the core standards (1, 3, 5, 7, 15)
+                    standardCheckboxes.forEach((checkbox, index) => {
+                        checkbox.checked = [0, 2, 4, 6, 14].includes(index);
+                    });
+                });
+            }
+            
+            // Function to update total questions count
+            function updateTotalQuestions() {
+                const totalQuestions = document.getElementById('total-questions');
+                if (!totalQuestions) return;
+                
+                const total = parseInt(mcCount.value || 0) + parseInt(srCount.value || 0) + parseInt(stCount.value || 0) + parseInt(fbCount.value || 0);
+                totalQuestions.textContent = total + ' questions';
+            }
+            
+            // Function to update estimated time
+            function updateEstimatedTime() {
+                const estimatedTime = document.getElementById('estimated-time');
+                const timeWarning = document.getElementById('time-warning');
+                const generateBtn = document.getElementById('generate-final');
+                
+                if (!estimatedTime || !timeWarning || !generateBtn) return;
+                
+                // Simplified calculation - in reality, would be more complex
+                const mcTime = parseInt(mcCount?.value || 0) * 1; // 1 min per MC
+                const srTime = parseInt(srCount?.value || 0) * 3; // 3 min per SR
+                const stTime = parseInt(stCount?.value || 0) * 5; // 5 min per ST
+                const fbTime = parseInt(fbCount?.value || 0) * 1; // 1 min per FB
+                
+                // Add time for special sections if enabled
+                let specialSectionTime = 0;
+                if (includeComprehensive?.checked) specialSectionTime += 15; // 15 min for comprehensive review
+                if (includePractical?.checked) specialSectionTime += 20; // 20 min for practical application
+                
+                const totalTime = mcTime + srTime + stTime + fbTime + specialSectionTime;
+                estimatedTime.textContent = totalTime + ' minutes';
+                
+                // Show warning if time exceeds 55 minutes
+                if (totalTime > 55) {
+                    timeWarning.classList.remove('hidden');
+                    generateBtn.disabled = true;
+                    generateBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                } else {
+                    timeWarning.classList.add('hidden');
+                    generateBtn.disabled = false;
+                    generateBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            }
+            
+            // Generate final button
+            const generateFinalBtn = document.getElementById('generate-final');
+            
+            if (generateFinalBtn) {
+                generateFinalBtn.addEventListener('click', function() {
+                    // In a real app, this would create a final and add it to the library
+                    // For this prototype, we'll just show a message
+                    alert('Final exam generated successfully! The final has been added to your custom finals.');
+                    
+                    // Enable custom finals section if it's not already visible
+                    if (customFinalToggle) {
+                        customFinalToggle.checked = true;
+                        customFinalsSection.classList.remove('hidden');
+                    }
+                    
+                    // Show the example final card
+                    if (emptyCustomFinals && customFinalsList) {
+                        emptyCustomFinals.classList.add('hidden');
+                        customFinalsList.classList.remove('hidden');
+                    }
+                });
+            }
+            
+            // Initialize calculations
+            updateTotalQuestions();
+            updateEstimatedTime();
+        });
+    </script>
+</body>
+</html>

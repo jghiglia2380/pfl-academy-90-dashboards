@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Standard 1: Jobs vs. Careers Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .question-type-badge.multiple-choice {
+            background-color: #E0E7FF;
+            color: #4338CA;
+        }
+        .question-type-badge.short-response {
+            background-color: #D1FAE5;
+            color: #065F46;
+        }
+        .question-type-badge.situational {
+            background-color: #FEF3C7;
+            color: #92400E;
+        }
+        .question-type-badge.fill-blank {
+            background-color: #FEE2E2;
+            color: #991B1B;
+        }
+        .ai-support-badge {
+            background-color: #F3E8FF;
+            color: #7E22CE;
+        }
+        .question-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #E5E7EB;
+            transition: all 0.2s;
+        }
+        .question-indicator.active {
+            background-color: #4F46E5;
+            transform: scale(1.2);
+        }
+        .question-indicator.completed {
+            background-color: #10B981;
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4F46E5;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease-out;
+        }
+        .toast.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <!-- Header with navigation -->
+    <header class="bg-gradient-to-r from-indigo-700 to-purple-700 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold">PFL Academy</h1>
+                    <nav class="ml-10 flex space-x-8">
+                        <a href="#" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-indigo-600">Dashboard</a>
+                        <a href="#" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-indigo-600">Curriculum</a>
+                        <a href="#" class="px-3 py-2 rounded-md text-sm font-medium bg-indigo-800">Assessments</a>
+                        <a href="#" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-indigo-600">Resources</a>
+                    </nav>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm">Teacher View</span>
+                    <button class="rounded-full h-8 w-8 bg-indigo-600 flex items-center justify-center">
+                        <i class="fas fa-user"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Quiz Header -->
+        <div class="mb-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <a href="./Assessment_Library_Page.html" class="text-indigo-600 hover:text-indigo-800 mb-2 inline-flex items-center">
+                        <i class="fas fa-arrow-left mr-2"></i> Back to Assessment Library
+                    </a>
+                    <h1 class="text-2xl font-bold text-gray-900">Standard 1: Jobs vs. Careers</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="text-sm bg-gray-100 px-4 py-2 rounded-full">
+                        Time: 10-15 minutes
+                    </div>
+                    <div class="flex space-x-2">
+                        <span class="question-type-badge multiple-choice px-2 py-1 rounded-full text-xs font-medium">MC</span>
+                        <span class="question-type-badge short-response px-2 py-1 rounded-full text-xs font-medium">SR</span>
+                        <span class="question-type-badge situational px-2 py-1 rounded-full text-xs font-medium">ST</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Instructions -->
+        <div class="mb-8 p-4 bg-blue-50 rounded-lg">
+            <h2 class="font-semibold mb-2">Instructions</h2>
+            <p>This quiz contains 12 questions about jobs and careers, including multiple choice, short response, and situational questions. Answer all questions to the best of your ability. You have 10-15 minutes to complete this assessment.</p>
+            <div class="mt-2 text-sm text-gray-600">
+                <p><span class="font-medium">Multiple Choice (MC):</span> Select the best answer from the options provided.</p>
+                <p><span class="font-medium">Short Response (SR):</span> Provide a brief written answer (250 characters or less).</p>
+                <p><span class="font-medium">Situational (ST):</span> Analyze the scenario and provide a detailed response (500 characters or less).</p>
+            </div>
+        </div>
+
+        <!-- Question Container -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <!-- Question sections - only one will be shown at a time -->
+            <div id="question-1" class="question-section">
+                <div class="flex items-center mb-4">
+                    <span class="question-type-badge multiple-choice px-2 py-1 rounded-full text-xs font-medium mr-2">MC</span>
+                    <h3 class="text-lg font-medium">Question 1 of 12</h3>
+                </div>
+                <p class="text-gray-800 mb-4">What is the main difference between a job and a career?</p>
+                <div class="space-y-3 mb-6">
+                    <label class="flex items-start p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="radio" name="q1" value="A" class="mt-1 mr-3" />
+                        <span>A) A job is temporary, a career is long-term</span>
+                    </label>
+                    <label class="flex items-start p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="radio" name="q1" value="B" class="mt-1 mr-3" />
+                        <span>B) A job pays more than a career</span>
+                    </label>
+                    <label class="flex items-start p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="radio" name="q1" value="C" class="mt-1 mr-3" />
+                        <span>C) A career requires education, a job does not</span>
+                    </label>
+                    <label class="flex items-start p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="radio" name="q1" value="D" class="mt-1 mr-3" />
+                        <span>D) There is no difference</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div id="question-2" class="question-section hidden">
+                <div class="flex items-center mb-4">
+                    <span class="question-type-badge multiple-choice px-2 py-1 rounded-full text-xs font-medium mr-2">MC</span>
+                    <h3 class="text-lg font-medium">Question 2 of 12</h3>
+                </div>
+                <p class="text-gray-800 mb-4">Which of the following is typically associated with a career rather than a job?</p>
+                <div class="space-y-3 mb-6">
+                    <label class="flex items-start p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="radio" name="q2" value="A" class="mt-1 mr-3" />
+                        <span>A) Hourly pay structure</span>
+                    </label>
+                    <label class="flex items-start p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="radio" name="q2" value="B" class="mt-1 mr-3" />
+                        <span>B) Minimal training requirements</span>
+                    </label>
+                    <label class="flex items-start p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="radio" name="q2" value="C" class="mt-1 mr-3" />
+                        <span>C) Professional development opportunities</span>
+                    </label>
+                    <label class="flex items-start p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="radio" name="q2" value="D" class="mt-1 mr-3" />
+                        <span>D) Limited advancement potential</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div id="question-3" class="question-section hidden">
+                <div class="flex items-center mb-4">
+                    <span class="question-type-badge multiple-choice px-2 py-1 rounded-full text-xs font-medium mr-2">MC</span>
+                    <h3 class="text-lg font-medium">Question 3 of 12</h3>
+                </div>
+                <p class="text-gray-800 mb-4">What is a primary reason people choose to switch careers?</p>
+                <div class="space-y-3 mb-6">
+                    <label class="flex items-start p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="radio" name="q3" value="A" class="mt-1 mr-3" />
+                        <span>A) To avoid working entirely</span>
+                    </label>
+                    <label class="flex items-start p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="radio" name="q3" value="B" class="mt-1 mr-3" />
+                        <span>B) To find more meaningful work</span>
+                    </label>
+                    <label class="flex items-start p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="radio" name="q3" value="C" class="mt-1 mr-3" />
+                        <span>C) To work fewer hours</span>
+                    </label>
+                    <label class="flex items-start p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="radio" name="q3" value="D" class="mt-1 mr-3" />
+                        <span>D) To avoid additional training</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div id="question-4" class="question-section hidden">
+                <div class="flex items-center mb-4">
+                    <span class="question-type-badge multiple-choice px-2 py-1 rounded-full text-xs font-medium mr-2">MC</span>
+                    <h3 class="text-lg font-medium">Question 4 of 12</h3>
+                </div>
+                <p class="text-gray-800 mb-4">Which of the following is an example of a career path rather than a series of jobs?</p>
+                <div class="space-y-3 mb-6">
+                    <label class="flex items-start p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="radio" name="q4" value="A" class="mt-1 mr-3" />
+                        <span>A) Working at different fast food restaurants</span>
+                    </label>
+                    <label class="flex items-start p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="radio" name="q4" value="B" class="mt-1 mr-3" />
+                        <span>B) Moving from cashier to retail manager to regional director</span>
+                    </label>
+                    <label class="flex items-start p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="radio" name="q4" value="C" class="mt-1 mr-3" />
+                        <span>C) Working summers as a lifeguard during college</span>
+                    </label>
+                    <label class="flex items-start p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="radio" name="q4" value="D" class="mt-1 mr-3" />
+                        <span>D) Taking temporary positions between semesters</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div id="question-5" class="question-section hidden">
+                <div class="flex items-center mb-4">
+                    <span class="question-type-badge multiple-choice px-2 py-1 rounded-full text-xs font-medium mr-2">MC</span>
+                    <h3 class="text-lg font-medium">Question 5 of 12</h3>
+                </div>
+                <p class="text-gray-800 mb-4">What is a key component of effective career planning?</p>
+                <div class="space-y-3 mb-6">
+                    <label class="flex items-start p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="radio" name="q5" value="A" class="mt-1 mr-3" />
+                        <span>A) Avoiding all further education</span>
+                    </label>
+                    <label class="flex items-start p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="radio" name="q5" value="B" class="mt-1 mr-3" />
+                        <span>B) Taking the first job offered regardless of fit</span>
+                    </label>
+                    <label class="flex items-start p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="radio" name="q5" value="C" class="mt-1 mr-3" />
+                        <span>C) Identifying personal strengths and interests</span>
+                    </label>
+                    <label class="flex items-start p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="radio" name="q5" value="D" class="mt-1 mr-3" />
+                        <span>D) Focusing exclusively on salary potential</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div id="question-6" class="question-section hidden">
+                <div class="flex items-center mb-4">
+                    <span class="question-type-badge short-response px-2 py-1 rounded-full text-xs font-medium mr-2">SR</span>
+                    <h3 class="text-lg font-medium">Question 6 of 12</h3>
+                </div>
+                <p class="text-gray-800 mb-4">Explain how career planning can impact your financial future.</p>
+                <div class="mb-6">
+                    <textarea
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        rows="4"
+                        maxlength="250"
+                        placeholder="Type your answer here (250 characters max)..."
+                    ></textarea>
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>AI assistance available</span>
+                        <span class="characters-remaining">250 characters remaining</span>
+                    </div>
+                </div>
+                <div class="ai-feedback hidden mb-4 p-3 border border-purple-200 rounded-lg bg-purple-50">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 mt-1">
+                            <i class="fas fa-robot text-purple-500"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h4 class="text-sm font-medium text-purple-800">AI Assistance</h4>
+                            <p class="text-sm text-purple-700 mt-1">Consider how career choices affect income potential, benefits, retirement options, and overall financial stability. Think about both short-term earnings and long-term growth potential.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="question-7" class="question-section hidden">
+                <div class="flex items-center mb-4">
+                    <span class="question-type-badge short-response px-2 py-1 rounded-full text-xs font-medium mr-2">SR</span>
+                    <h3 class="text-lg font-medium">Question 7 of 12</h3>
+                </div>
+                <p class="text-gray-800 mb-4">Describe the role of education in career development. How does continued learning impact career advancement?</p>
+                <div class="mb-6">
+                    <textarea
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        rows="4"
+                        maxlength="250"
+                        placeholder="Type your answer here (250 characters max)..."
+                    ></textarea>
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>AI assistance available</span>
+                        <span class="characters-remaining">250 characters remaining</span>
+                    </div>
+                </div>
+                <div class="ai-feedback hidden mb-4 p-3 border border-purple-200 rounded-lg bg-purple-50">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 mt-1">
+                            <i class="fas fa-robot text-purple-500"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h4 class="text-sm font-medium text-purple-800">AI Assistance</h4>
+                            <p class="text-sm text-purple-700 mt-1">Think about formal education, certifications, and on-the-job training. Consider how ongoing learning helps you adapt to changing job markets and qualify for advancement opportunities.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="question-8" class="question-section hidden">
+                <div class="flex items-center mb-4">
+                    <span class="question-type-badge short-response px-2 py-1 rounded-full text-xs font-medium mr-2">SR</span>
+                    <h3 class="text-lg font-medium">Question 8 of 12</h3>
+                </div>
+                <p class="text-gray-800 mb-4">How can networking contribute to career success? Give specific examples.</p>
+                <div class="mb-6">
+                    <textarea
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        rows="4"
+                        maxlength="250"
+                        placeholder="Type your answer here (250 characters max)..."
+                    ></textarea>
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>AI assistance available</span>
+                        <span class="characters-remaining">250 characters remaining</span>
+                    </div>
+                </div>
+                <div class="ai-feedback hidden mb-4 p-3 border border-purple-200 rounded-lg bg-purple-50">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 mt-1">
+                            <i class="fas fa-robot text-purple-500"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h4 class="text-sm font-medium text-purple-800">AI Assistance</h4>
+                            <p class="text-sm text-purple-700 mt-1">Consider both professional and personal networking. Think about how connections can lead to job opportunities, mentorship, industry insights, and professional development.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="question-9" class="question-section hidden">
+                <div class="flex items-center mb-4">
+                    <span class="question-type-badge short-response px-2 py-1 rounded-full text-xs font-medium mr-2">SR</span>
+                    <h3 class="text-lg font-medium">Question 9 of 12</h3>
+                </div>
+                <p class="text-gray-800 mb-4">Explain the difference between hard skills and soft skills. Why are both important for career success?</p>
+                <div class="mb-6">
+                    <textarea
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        rows="4"
+                        maxlength="250"
+                        placeholder="Type your answer here (250 characters max)..."
+                    ></textarea>
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>AI assistance available</span>
+                        <span class="characters-remaining">250 characters remaining</span>
+                    </div>
+                </div>
+                <div class="ai-feedback hidden mb-4 p-3 border border-purple-200 rounded-lg bg-purple-50">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 mt-1">
+                            <i class="fas fa-robot text-purple-500"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h4 class="text-sm font-medium text-purple-800">AI Assistance</h4>
+                            <p class="text-sm text-purple-700 mt-1">Hard skills are technical abilities (like coding or accounting), while soft skills involve interpersonal abilities (like communication or teamwork). Consider how each type contributes to workplace success.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="question-10" class="question-section hidden">
+                <div class="flex items-center mb-4">
+                    <span class="question-type-badge situational px-2 py-1 rounded-full text-xs font-medium mr-2">ST</span>
+                    <h3 class="text-lg font-medium">Question 10 of 12</h3>
+                </div>
+                <p class="text-gray-800 mb-4">You are offered two job opportunities: one with higher pay but no benefits, and another with lower pay but full benefits. Which would you choose and why?</p>
+                <div class="mb-6">
+                    <textarea
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        rows="6"
+                        maxlength="500"
+                        placeholder="Type your answer here (500 characters max)..."
+                    ></textarea>
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>AI assistance available</span>
+                        <span class="characters-remaining">500 characters remaining</span>
+                    </div>
+                </div>
+                <div class="ai-feedback hidden mb-4 p-3 border border-purple-200 rounded-lg bg-purple-50">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 mt-1">
+                            <i class="fas fa-robot text-purple-500"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h4 class="text-sm font-medium text-purple-800">AI Assistance</h4>
+                            <p class="text-sm text-purple-700 mt-1">Consider factors like health insurance value, retirement benefits, work-life balance, and long-term career growth. Think about your current life situation and future plans when making your decision.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="question-11" class="question-section hidden">
+                <div class="flex items-center mb-4">
+                    <span class="question-type-badge situational px-2 py-1 rounded-full text-xs font-medium mr-2">ST</span>
+                    <h3 class="text-lg font-medium">Question 11 of 12</h3>
+                </div>
+                <p class="text-gray-800 mb-4">You're a recent high school graduate who needs to decide between attending college full-time or working full-time to support yourself. How would you approach this decision?</p>
+                <div class="mb-6">
+                    <textarea
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        rows="6"
+                        maxlength="500"
+                        placeholder="Type your answer here (500 characters max)..."
+                    ></textarea>
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>AI assistance available</span>
+                        <span class="characters-remaining">500 characters remaining</span>
+                    </div>
+                </div>
+                <div class="ai-feedback hidden mb-4 p-3 border border-purple-200 rounded-lg bg-purple-50">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 mt-1">
+                            <i class="fas fa-robot text-purple-500"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h4 class="text-sm font-medium text-purple-800">AI Assistance</h4>
+                            <p class="text-sm text-purple-700 mt-1">Consider immediate financial needs versus long-term career potential. Think about alternatives like part-time education, financial aid, community college, or apprenticeships that might offer a balance.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="question-12" class="question-section hidden">
+                <div class="flex items-center mb-4">
+                    <span class="question-type-badge situational px-2 py-1 rounded-full text-xs font-medium mr-2">ST</span>
+                    <h3 class="text-lg font-medium">Question 12 of 12</h3>
+                </div>
+                <p class="text-gray-800 mb-4">You've been at your current job for five years with minimal advancement. You enjoy the work but feel your career has stagnated. What steps would you take to address this situation?</p>
+                <div class="mb-6">
+                    <textarea
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        rows="6"
+                        maxlength="500"
+                        placeholder="Type your answer here (500 characters max)..."
+                    ></textarea>
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>AI assistance available</span>
+                        <span class="characters-remaining">500 characters remaining</span>
+                    </div>
+                </div>
+                <div class="ai-feedback hidden mb-4 p-3 border border-purple-200 rounded-lg bg-purple-50">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 mt-1">
+                            <i class="fas fa-robot text-purple-500"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h4 class="text-sm font-medium text-purple-800">AI Assistance</h4>
+                            <p class="text-sm text-purple-700 mt-1">Consider options like requesting additional responsibilities, pursuing further education, having a conversation with your supervisor about growth opportunities, or exploring positions at other companies.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation and Progress -->
+        <div class="flex justify-between items-center mb-6">
+            <button id="prev-btn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Previous
+            </button>
+            
+            <div class="flex space-x-3 overflow-auto py-2 px-4">
+                <div class="question-indicator active" data-question="1" title="Question 1"></div>
+                <div class="question-indicator" data-question="2" title="Question 2"></div>
+                <div class="question-indicator" data-question="3" title="Question 3"></div>
+                <div class="question-indicator" data-question="4" title="Question 4"></div>
+                <div class="question-indicator" data-question="5" title="Question 5"></div>
+                <div class="question-indicator" data-question="6" title="Question 6"></div>
+                <div class="question-indicator" data-question="7" title="Question 7"></div>
+                <div class="question-indicator" data-question="8" title="Question 8"></div>
+                <div class="question-indicator" data-question="9" title="Question 9"></div>
+                <div class="question-indicator" data-question="10" title="Question 10"></div>
+                <div class="question-indicator" data-question="11" title="Question 11"></div>
+                <div class="question-indicator" data-question="12" title="Question 12"></div>
+            </div>
+            
+            <button id="next-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                Next<i class="fas fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+
+        <!-- Submit Button (initially hidden) -->
+        <div id="submit-container" class="text-center hidden">
+            <button id="submit-btn" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                Submit Quiz
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span id="toast-message">Answer saved successfully!</span>
+        </div>
+    </div>
+
+    <!-- Quiz Completion Modal (Hidden by default) -->
+    <div id="completion-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-lg max-w-lg w-full">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-green-600 mb-4">
+                    <i class="fas fa-check-circle text-3xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900">Quiz Completed!</h2>
+                <p class="text-gray-600 mt-2">Your answers have been submitted successfully.</p>
+            </div>
+            
+            <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                <h3 class="font-medium text-gray-900 mb-2">Summary</h3>
+                <ul class="space-y-2 text-sm">
+                    <li class="flex justify-between">
+                        <span>Multiple Choice Questions:</span>
+                        <span>5/5 completed</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>Short Response Questions:</span>
+                        <span>4/4 completed</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>Situational Questions:</span>
+                        <span>3/3 completed</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="flex justify-center">
+                <button id="view-results-btn" class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                    Return to Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const questionSections = document.querySelectorAll('.question-section');
+            const questionIndicators = document.querySelectorAll('.question-indicator');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const submitContainer = document.getElementById('submit-container');
+            const submitBtn = document.getElementById('submit-btn');
+            const toast = document.getElementById('toast');
+            const completionModal = document.getElementById('completion-modal');
+            const viewResultsBtn = document.getElementById('view-results-btn');
+            const textareas = document.querySelectorAll('textarea');
+            
+            let currentQuestion = 0;
+            const totalQuestions = questionSections.length;
+            
+            // Update character count for textareas
+            textareas.forEach(textarea => {
+                const maxLength = textarea.getAttribute('maxlength');
+                const counter = textarea.parentElement.querySelector('.characters-remaining');
+                
+                textarea.addEventListener('input', function() {
+                    const remaining = maxLength - textarea.value.length;
+                    counter.textContent = `${remaining} characters remaining`;
+                });
+                
+                // Show AI feedback on focus after typing a bit
+                textarea.addEventListener('focus', function() {
+                    if (textarea.value.length > 10) {
+                        const aiFeedback = textarea.parentElement.nextElementSibling;
+                        if (aiFeedback && aiFeedback.classList.contains('ai-feedback')) {
+                            setTimeout(() => {
+                                aiFeedback.classList.remove('hidden');
+                            }, 1500);
+                        }
+                    }
+                });
+            });
+            
+            // Show first question, hide others
+            function showQuestion(index) {
+                questionSections.forEach((section, i) => {
+                    if (i === index) {
+                        section.classList.remove('hidden');
+                    } else {
+                        section.classList.add('hidden');
+                    }
+                });
+                
+                // Update indicators
+                questionIndicators.forEach((indicator, i) => {
+                    indicator.classList.remove('active');
+                    if (i === index) {
+                        indicator.classList.add('active');
+                    }
+                });
+                
+                // Update buttons
+                prevBtn.style.visibility = index === 0 ? 'hidden' : 'visible';
+                
+                if (index === totalQuestions - 1) {
+                    nextBtn.classList.add('hidden');
+                    submitContainer.classList.remove('hidden');
+                } else {
+                    nextBtn.classList.remove('hidden');
+                    submitContainer.classList.add('hidden');
+                }
+            }
+            
+            // Initialize
+            showQuestion(currentQuestion);
+            
+            // Navigation buttons
+            prevBtn.addEventListener('click', function() {
+                if (currentQuestion > 0) {
+                    currentQuestion--;
+                    showQuestion(currentQuestion);
+                    showToast('Previous question loaded');
+                }
+            });
+            
+            nextBtn.addEventListener('click', function() {
+                // Validate if needed
+                const isValid = validateCurrentQuestion();
+                
+                if (isValid) {
+                    // Mark current question as completed
+                    questionIndicators[currentQuestion].classList.add('completed');
+                    
+                    if (currentQuestion < totalQuestions - 1) {
+                        currentQuestion++;
+                        showQuestion(currentQuestion);
+                        showToast('Answer saved');
+                    }
+                } else {
+                    showToast('Please answer the question before proceeding', 'error');
+                }
+            });
+            
+            // Submit quiz
+            submitBtn.addEventListener('click', function() {
+                // Validate last question
+                const isValid = validateCurrentQuestion();
+                
+                if (isValid) {
+                    // Mark last question as completed
+                    questionIndicators[currentQuestion].classList.add('completed');
+                    
+                    // Show completion modal
+                    completionModal.classList.remove('hidden');
+                } else {
+                    showToast('Please answer the question before submitting', 'error');
+                }
+            });
+            
+            // Return to dashboard
+            viewResultsBtn.addEventListener('click', function() {
+                window.location.href = './Assessment_Library_Page.html';
+            });
+            
+            // Click on question indicators
+            questionIndicators.forEach((indicator, index) => {
+                indicator.addEventListener('click', function() {
+                    currentQuestion = index;
+                    showQuestion(currentQuestion);
+                });
+            });
+            
+            // Validate current question
+            function validateCurrentQuestion() {
+                const currentSection = questionSections[currentQuestion];
+                
+                if (currentSection.querySelector('input[type="radio"]')) {
+                    // Multiple choice validation
+                    const checked = currentSection.querySelector('input[type="radio"]:checked');
+                    return !!checked;
+                } else if (currentSection.querySelector('textarea')) {
+                    // Text response validation
+                    const textarea = currentSection.querySelector('textarea');
+                    return textarea.value.trim().length > 0;
+                }
+                
+                return true;
+            }
+            
+            // Show toast message
+            function showToast(message, type = 'success') {
+                const toastEl = document.getElementById('toast');
+                const messageEl = document.getElementById('toast-message');
+                
+                messageEl.textContent = message;
+                
+                if (type === 'error') {
+                    toastEl.style.backgroundColor = '#EF4444';
+                } else {
+                    toastEl.style.backgroundColor = '#4F46E5';
+                }
+                
+                toastEl.classList.add('visible');
+                
+                setTimeout(() => {
+                    toastEl.classList.remove('visible');
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>

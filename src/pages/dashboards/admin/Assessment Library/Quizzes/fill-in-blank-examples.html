@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fill in the Blank Question Examples</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .question-type-badge.fill-blank {
+            background-color: #FEE2E2;
+            color: #991B1B;
+        }
+        .blank-input {
+            display: inline-block;
+            width: 120px;
+            border-bottom: 2px solid #6B7280;
+            text-align: center;
+            padding: 2px 4px;
+            margin: 0 4px;
+        }
+        .blank-input:focus {
+            border-bottom: 2px solid #4F46E5;
+            outline: none;
+        }
+        .correct {
+            border-bottom: 2px solid #10B981;
+            background-color: #D1FAE5;
+        }
+        .incorrect {
+            border-bottom: 2px solid #EF4444;
+            background-color: #FEE2E2;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-indigo-700 to-purple-700 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold">PFL Academy</h1>
+                    <nav class="ml-10 flex space-x-8">
+                        <a href="#" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-indigo-600">Dashboard</a>
+                        <a href="#" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-indigo-600">Curriculum</a>
+                        <a href="#" class="px-3 py-2 rounded-md text-sm font-medium bg-indigo-800">Assessments</a>
+                        <a href="#" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-indigo-600">Resources</a>
+                    </nav>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm">Developer Reference</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Page Header -->
+        <div class="mb-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <a href="./Assessment_Library_Page.html" class="text-indigo-600 hover:text-indigo-800 mb-2 inline-flex items-center">
+                        <i class="fas fa-arrow-left mr-2"></i> Back to Assessment Library
+                    </a>
+                    <h1 class="text-2xl font-bold text-gray-900">Fill-in-the-Blank Examples</h1>
+                    <p class="text-gray-600 mt-1">Reference implementation for developers</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Examples Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Implementation Examples</h2>
+            <p class="mb-6">Below are four different examples of Fill-in-the-Blank (FB) question implementations. Each demonstrates a different approach to handling blank fields.</p>
+
+            <!-- Example 1: Single Blank with Direct Input -->
+            <div class="mb-10 p-5 border border-gray-200 rounded-lg">
+                <div class="flex items-center mb-4">
+                    <span class="question-type-badge fill-blank px-2 py-1 rounded-full text-xs font-medium mr-2">FB</span>
+                    <h3 class="text-lg font-medium">Example 1: Single Blank with Direct Input</h3>
+                </div>
+                <p class="text-gray-800 mb-4">The first step in creating a budget is to <input type="text" class="blank-input" data-answer="track" placeholder="________"> your income and expenses.</p>
+                <div class="mt-4 text-sm text-gray-500">
+                    <p><strong>Implementation Details:</strong></p>
+                    <p>• Single text input inline with question text</p>
+                    <p>• Answer: "track"</p>
+                    <p>• Case-insensitive matching</p>
+                    <p>• Visual feedback on correctness</p>
+                </div>
+                <div class="mt-4">
+                    <button class="check-answer-btn px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 text-sm">Check Answer</button>
+                    <span class="feedback ml-3 hidden"></span>
+                </div>
+            </div>
+
+            <!-- Example 2: Multiple Blanks with Sequence -->
+            <div class="mb-10 p-5 border border-gray-200 rounded-lg">
+                <div class="flex items-center mb-4">
+                    <span class="question-type-badge fill-blank px-2 py-1 rounded-full text-xs font-medium mr-2">FB</span>
+                    <h3 class="text-lg font-medium">Example 2: Multiple Blanks with Sequence</h3>
+                </div>
+                <p class="text-gray-800 mb-4">The three main types of taxes are <input type="text" class="blank-input" data-answer="income" placeholder="________">, <input type="text" class="blank-input" data-answer="sales" placeholder="________">, and <input type="text" class="blank-input" data-answer="property" placeholder="________">.</p>
+                <div class="mt-4 text-sm text-gray-500">
+                    <p><strong>Implementation Details:</strong></p>
+                    <p>• Multiple text inputs in sequence</p>
+                    <p>• Answers: "income", "sales", "property"</p>
+                    <p>• Order matters</p>
+                    <p>• Individual feedback for each blank</p>
+                </div>
+                <div class="mt-4">
+                    <button class="check-answer-btn px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 text-sm">Check Answer</button>
+                    <span class="feedback ml-3 hidden"></span>
+                </div>
+            </div>
+
+            <!-- Example 3: Multiple Blanks with Any Order -->
+            <div class="mb-10 p-5 border border-gray-200 rounded-lg">
+                <div class="flex items-center mb-4">
+                    <span class="question-type-badge fill-blank px-2 py-1 rounded-full text-xs font-medium mr-2">FB</span>
+                    <h3 class="text-lg font-medium">Example 3: Multiple Blanks with Any Order</h3>
+                </div>
+                <p class="text-gray-800 mb-4">When comparing job offers, you should consider <input type="text" class="blank-input" data-answer-set="salary,benefits,location,culture" placeholder="________">, <input type="text" class="blank-input" data-answer-set="salary,benefits,location,culture" placeholder="________">, <input type="text" class="blank-input" data-answer-set="salary,benefits,location,culture" placeholder="________">, and <input type="text" class="blank-input" data-answer-set="salary,benefits,location,culture" placeholder="________">.</p>
+                <div class="mt-4 text-sm text-gray-500">
+                    <p><strong>Implementation Details:</strong></p>
+                    <p>• Multiple text inputs with a set of valid answers</p>
+                    <p>• Valid answers: "salary", "benefits", "location", "culture"</p>
+                    <p>• Order doesn't matter</p>
+                    <p>• No duplicates allowed</p>
+                </div>
+                <div class="mt-4">
+                    <button class="check-answer-btn px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 text-sm">Check Answer</button>
+                    <span class="feedback ml-3 hidden"></span>
+                </div>
+            </div>
+
+            <!-- Example 4: Drop-down Selection -->
+            <div class="mb-10 p-5 border border-gray-200 rounded-lg">
+                <div class="flex items-center mb-4">
+                    <span class="question-type-badge fill-blank px-2 py-1 rounded-full text-xs font-medium mr-2">FB</span>
+                    <h3 class="text-lg font-medium">Example 4: Drop-down Selection</h3>
+                </div>
+                <p class="text-gray-800 mb-4">Compound interest means that you earn interest on both the principal and 
+                    <select class="blank-input bg-white" data-answer="previously-earned interest">
+                        <option value="">Select answer</option>
+                        <option value="previously-earned interest">previously-earned interest</option>
+                        <option value="future investments">future investments</option>
+                        <option value="stock dividends">stock dividends</option>
+                        <option value="tax deductions">tax deductions</option>
+                    </select>.
+                </p>
+                <div class="mt-4 text-sm text-gray-500">
+                    <p><strong>Implementation Details:</strong></p>
+                    <p>• Dropdown selection instead of text input</p>
+                    <p>• Prevents spelling issues</p>
+                    <p>• Limited to predefined choices</p>
+                    <p>• Good for complex terminology</p>
+                </div>
+                <div class="mt-4">
+                    <button class="check-answer-btn px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 text-sm">Check Answer</button>
+                    <span class="feedback ml-3 hidden"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Implementation Guide -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Implementation Guide</h2>
+            
+            <div class="mb-6">
+                <h3 class="text-lg font-medium mb-2">1. JSON Structure</h3>
+                <div class="bg-gray-100 p-4 rounded-md">
+                    <pre class="text-sm">
+{
+  "type": "FB",
+  "question": "The three main types of taxes are __________, __________, and __________.",
+  "answers": ["income", "sales", "property"]
+}
+                    </pre>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <h3 class="text-lg font-medium mb-2">2. HTML Implementation</h3>
+                <div class="bg-gray-100 p-4 rounded-md">
+                    <pre class="text-sm">
+&lt;p class="text-gray-800 mb-4"&gt;
+  The three main types of taxes are 
+  &lt;input type="text" class="blank-input" data-answer="income" placeholder="________"&gt;, 
+  &lt;input type="text" class="blank-input" data-answer="sales" placeholder="________"&gt;, 
+  and &lt;input type="text" class="blank-input" data-answer="property" placeholder="________"&gt;.
+&lt;/p&gt;
+                    </pre>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <h3 class="text-lg font-medium mb-2">3. JavaScript Validation</h3>
+                <div class="bg-gray-100 p-4 rounded-md">
+                    <pre class="text-sm">
+function validateFillBlank(container) {
+  const inputs = container.querySelectorAll('.blank-input');
+  let allCorrect = true;
+  
+  inputs.forEach(input => {
+    // For simple answers
+    if (input.hasAttribute('data-answer')) {
+      const correct = input.value.trim().toLowerCase() === 
+                      input.getAttribute('data-answer').toLowerCase();
+      input.classList.toggle('correct', correct);
+      input.classList.toggle('incorrect', !correct);
+      allCorrect = allCorrect && correct;
+    }
+    
+    // For answer sets (any order)
+    else if (input.hasAttribute('data-answer-set')) {
+      const answerSet = input.getAttribute('data-answer-set').split(',');
+      const correct = answerSet.includes(input.value.trim().toLowerCase());
+      input.classList.toggle('correct', correct);
+      input.classList.toggle('incorrect', !correct);
+      allCorrect = allCorrect && correct;
+    }
+  });
+  
+  return allCorrect;
+}
+                    </pre>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <h3 class="text-lg font-medium mb-2">4. CSS Styling</h3>
+                <div class="bg-gray-100 p-4 rounded-md">
+                    <pre class="text-sm">
+.blank-input {
+  display: inline-block;
+  width: 120px;
+  border-bottom: 2px solid #6B7280;
+  text-align: center;
+  padding: 2px 4px;
+  margin: 0 4px;
+}
+.blank-input:focus {
+  border-bottom: 2px solid #4F46E5;
+  outline: none;
+}
+.correct {
+  border-bottom: 2px solid #10B981;
+  background-color: #D1FAE5;
+}
+.incorrect {
+  border-bottom: 2px solid #EF4444;
+  background-color: #FEE2E2;
+}
+                    </pre>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Additional Considerations -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-semibold mb-4">Additional Considerations</h2>
+            
+            <ul class="list-disc pl-5 space-y-2">
+                <li><strong>Case sensitivity:</strong> Consider whether answers should be case-sensitive or not.</li>
+                <li><strong>Alternative answers:</strong> Allow for multiple acceptable answers (e.g., "federal" or "income" tax).</li>
+                <li><strong>Partial scoring:</strong> For multiple blanks, award partial points for partially correct answers.</li>
+                <li><strong>Hint system:</strong> Provide hints after incorrect attempts.</li>
+                <li><strong>Accessibility:</strong> Ensure keyboard navigation works properly with multiple blanks.</li>
+                <li><strong>Mobile responsiveness:</strong> Adjust input width on smaller screens.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkButtons = document.querySelectorAll('.check-answer-btn');
+            
+            checkButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const container = this.closest('div').previousElementSibling.previousElementSibling;
+                    const feedbackElement = this.nextElementSibling;
+                    const inputs = container.querySelectorAll('.blank-input');
+                    let allCorrect = true;
+                    
+                    inputs.forEach(input => {
+                        // Direct answer check
+                        if (input.hasAttribute('data-answer')) {
+                            const userAnswer = input.value.trim().toLowerCase();
+                            const correctAnswer = input.getAttribute('data-answer').toLowerCase();
+                            const isCorrect = userAnswer === correctAnswer;
+                            
+                            input.classList.toggle('correct', isCorrect);
+                            input.classList.toggle('incorrect', !isCorrect);
+                            
+                            allCorrect = allCorrect && isCorrect;
+                        }
+                        // Answer set check (any order)
+                        else if (input.hasAttribute('data-answer-set')) {
+                            const answerSet = input.getAttribute('data-answer-set').split(',');
+                            const userAnswer = input.value.trim().toLowerCase();
+                            const isCorrect = answerSet.includes(userAnswer);
+                            
+                            input.classList.toggle('correct', isCorrect);
+                            input.classList.toggle('incorrect', !isCorrect);
+                            
+                            allCorrect = allCorrect && isCorrect;
+                        }
+                        // Dropdown check
+                        else if (input.tagName === 'SELECT') {
+                            const userAnswer = input.value;
+                            const correctAnswer = input.getAttribute('data-answer');
+                            const isCorrect = userAnswer === correctAnswer;
+                            
+                            input.classList.toggle('correct', isCorrect);
+                            input.classList.toggle('incorrect', !isCorrect);
+                            
+                            allCorrect = allCorrect && isCorrect;
+                        }
+                    });
+                    
+                    // Show feedback
+                    feedbackElement.classList.remove('hidden');
+                    if (allCorrect) {
+                        feedbackElement.textContent = '✓ Correct!';
+                        feedbackElement.className = 'feedback ml-3 text-green-600';
+                    } else {
+                        feedbackElement.textContent = '✗ Incorrect. Try again.';
+                        feedbackElement.className = 'feedback ml-3 text-red-600';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
